@@ -81,11 +81,11 @@ public class WalletUtils {
      *     Key = SHA-256(BIP_39_SEED(mnemonic, password))
      * </pre>
      *
-     * @param password Will be used for both wallet encryption and passphrase for BIP-39 seed
+     * @param password             Will be used for both wallet encryption and passphrase for BIP-39 seed
      * @param destinationDirectory The directory containing the wallet
      * @return A BIP-39 compatible Ethereum wallet
      * @throws CipherException if the underlying cipher is not available
-     * @throws IOException if the destination cannot be written to
+     * @throws IOException     if the destination cannot be written to
      */
     public static Bip39Wallet generateBip39Wallet(String password, File destinationDirectory)
             throws CipherException, IOException {
@@ -117,9 +117,14 @@ public class WalletUtils {
         return Credentials.create(ECKeyPair.create(sha256(seed)));
     }
 
+    /**
+     * 我只是想要复写这个方法而已，不得已选择了继承
+     *
+     * @param walletFile
+     * @return
+     */
     private static String getWalletFileName(WalletFile walletFile) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("'UTC--'yyyy-MM-dd'T'HH-mm-ss.SSS'--'");
-        return dateFormat.format(new Date()) + walletFile.getAddress() + ".json";
+        return walletFile.getAddress();
     }
 
     public static String getDefaultKeyDirectory() {

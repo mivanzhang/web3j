@@ -44,7 +44,7 @@ allprojects {
     targetCompatibility = 1.6
 
     group 'org.web3j'
-    version '3.3.1-android'
+    version '3.3.2-android'
 
     apply plugin: 'java'
     apply plugin: 'jacoco'
@@ -89,6 +89,7 @@ subprojects {
     dependencies {
         testCompile "junit:junit:$junitVersion",
                     "org.mockito:mockito-core:$mockitoVersion"
+        compile 'com.lambdaworks:scrypt:1.4.0'
     }
 }
 

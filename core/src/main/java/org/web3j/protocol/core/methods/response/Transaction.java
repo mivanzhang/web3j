@@ -1,5 +1,6 @@
 package org.web3j.protocol.core.methods.response;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 import org.web3j.utils.Numeric;
@@ -7,7 +8,7 @@ import org.web3j.utils.Numeric;
 /**
  * Transaction object used by both {@link EthTransaction} and {@link EthBlock}.
  */
-public class Transaction {
+public class Transaction implements Serializable{
     private String hash;
     private String nonce;
     private String blockHash;

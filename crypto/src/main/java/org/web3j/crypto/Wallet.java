@@ -1,5 +1,7 @@
 package org.web3j.crypto;
 
+import com.lambdaworks.crypto.SCrypt;
+
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -7,6 +9,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.UUID;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -16,7 +19,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.spongycastle.crypto.digests.SHA256Digest;
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator;
-import org.spongycastle.crypto.generators.SCrypt;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import org.web3j.utils.Numeric;
@@ -29,7 +31,7 @@ import static org.web3j.crypto.SecureRandomUtils.secureRandom;
  * Web3 Secret Storage Definition</a> or the
  * <a href="https://github.com/ethereum/go-ethereum/blob/master/accounts/key_store_passphrase.go">
  * Go Ethereum client implementation</a>.</p>
- *
+ * <p>
  * <p><strong>Note:</strong> we don't use the Bouncy Castle Scrypt implementation
  * {@link org.spongycastle.crypto.generators.SCrypt}, as the following parameter assertion results
  * in failure of the Ethereum reference
@@ -38,7 +40,7 @@ import static org.web3j.crypto.SecureRandomUtils.secureRandom;
  * Ethereum reference
  * <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition#scrypt">
  * Scrypt test vector</a>:</p>
- *
+ * <p>
  * <pre>
  * {@code
  * // Only value of r that cost (as an int) could be exceeded for is 1
@@ -81,7 +83,7 @@ public class Wallet {
                 Numeric.toBytesPadded(ecKeyPair.getPrivateKey(), Keys.PRIVATE_KEY_SIZE);
 
         byte[] cipherText = performCipherOperation(
-                    Cipher.ENCRYPT_MODE, iv, encryptKey, privateKeyBytes);
+                Cipher.ENCRYPT_MODE, iv, encryptKey, privateKeyBytes);
 
         byte[] mac = generateMac(derivedKey, cipherText);
 
@@ -133,7 +135,12 @@ public class Wallet {
 
     private static byte[] generateDerivedScryptKey(
             byte[] password, byte[] salt, int n, int r, int p, int dkLen) throws CipherException {
-        return SCrypt.generate(password, salt, n, r, p, dkLen);
+        try {
+            return SCrypt.scrypt(password, salt, n, r, p, dkLen);
+        } catch (GeneralSecurityException e) {
+            throw new CipherException(e);
+        }
+//        return SCrypt.generate(password, salt, n, r, p, dkLen);
     }
 
     private static byte[] generateAes128CtrDerivedKey(
